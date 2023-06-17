@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"example.com/golang-jwt-project/controller"
 	"example.com/golang-jwt-project/middleware"
 	"github.com/gin-gonic/gin"
 )
