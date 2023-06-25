@@ -25,7 +25,8 @@ type SignedDetails struct {
 
 func (s SignedDetails) Valid() error {
 	//TODO implement me
-	panic("implement me")
+	retrun
+
 }
 
 var userCollection *mongo.Collection = database.OpenCollection(database.Client, "user")
@@ -61,7 +62,7 @@ func UpdateAllToken(signedToken string, refreshToken string, userId string) {
 		&opt)
 
 	if err != nil {
-		log.Panic(err)
+
 		return
 	}
 

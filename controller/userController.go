@@ -31,7 +31,7 @@ func HashPassword(password string) (string, error) {
 }
 
 func VerifyPassword(password string, foundPassword string) (bool, string) {
-	err := bcrypt.CompareHashAndPassword([]byte(password), []byte(foundPassword))
+	err := bcrypt.CompareHashAndPassword([]byte(foundPassword), []byte(password))
 	check := true
 	msg := ""
 	if err != nil {
@@ -83,9 +83,10 @@ func Signup() gin.HandlerFunc {
 		user.Created_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		user.Updated_at, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 		user.ID = primitive.NewObjectID()
-		//user.User_id = user.ID.(primitive.ObjectID).Hex()
+		user.User_id = user.ID.Hex()
 		fmt.Sprintf("before error2")
-		token, refreshToken, _ := helper.GenerateAllToken(*user.Email, *user.FirstName, *user.LastName, *user.User_id, *user.User_type)
+		//token, refreshToken, _ := helper.GenerateAllToken(*user.Email, *user.FirstName, *user.LastName, *user.User_type, *&user.User_id)
+		token, refreshToken, _ := helper.GenerateAllToken(*user.Email, *user.First_name, *user.Last_name, *user.User_type, *&user.User_id)
 		user.Token = &token
 		user.Refresh_token = &refreshToken
 
@@ -115,10 +116,13 @@ func Login() gin.HandlerFunc {
 		defer cancel()
 
 		if err != nil {
-			log.Panic(err)
+			//log.Panic(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "email or password is incorrect"})
 			return
 		}
+
+		log.Println("*foundUser.Password id %v", *foundUser.Password)
+		log.Println("*user.Passwor id %v", *user.Password)
 
 		passwordIsCorrect, msg := VerifyPassword(*user.Password, *foundUser.Password)
 		defer cancel()
@@ -127,10 +131,10 @@ func Login() gin.HandlerFunc {
 			return
 		}
 
-		token, refreshToken, _ := helper.GenerateAllToken(*foundUser.Email, *foundUser.FirstName, *foundUser.LastName, *foundUser.User_type, *foundUser.User_id)
+		token, refreshToken, _ := helper.GenerateAllToken(*foundUser.Email, *foundUser.First_name, *foundUser.Last_name, *foundUser.User_type, *&foundUser.User_id)
 		*foundUser.Token = token
 		*foundUser.Refresh_token = refreshToken
-		helper.UpdateAllToken(token, refreshToken, *foundUser.User_id)
+		helper.UpdateAllToken(token, refreshToken, *&foundUser.User_id)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		}
