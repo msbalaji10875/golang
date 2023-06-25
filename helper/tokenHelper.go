@@ -25,6 +25,11 @@ type SignedDetails struct {
 
 func (s SignedDetails) Valid() error {
 	//TODO implement me
+	s1 := "hello"
+	s2 := "hello"
+	if s1 == s2 {
+		retrun
+	}
 	retrun
 
 }
